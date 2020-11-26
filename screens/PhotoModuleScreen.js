@@ -67,14 +67,10 @@ const checkAndroidPermission = async () => {
             if (Platform.OS === 'android'){
               await checkAndroidPermission();
             }
-            MediaLibrary
-            //var result = CameraRoll.save(data.uri);
-            var result = MediaLibrary.saveToLibraryAsync(data.uri);
-            console.log(result)
+            var result = await MediaLibrary.saveToLibraryAsync(data.uri);
           }
         );
         const source = data.uri;
-
         if (source) {
           await cameraRef.current.pausePreview();
           setIsPreview(true);
