@@ -1,12 +1,15 @@
 import  React, {useState, useRef, useEffect} from 'react';
 import IconButton from "../components/IconButton";
 import useStatusBar from "../hooks/useStatusBar";
-import { StyleSheet, View, Button, Dimensions, Text, TouchableOpacity, SafeAreaView } from 'react-native';
+import { StyleSheet, View, Button, Dimensions, Text, TouchableOpacity, SafeAreaView, PermissionsAndroid, Platform } from 'react-native';
 import Colors from '../utils/colors';
 import { Camera } from 'expo-camera';
 import { Video } from 'expo-av';
 import * as Permissions from 'expo-permissions';
 import { FontAwesome, Ionicons,MaterialCommunityIcons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import CameraRoll from "@react-native-community/cameraroll";
+import * as MediaLibrary from 'expo-media-library';
 
 const WINDOW_HEIGHT = Dimensions.get("window").height;
 const closeButtonSize = Math.floor(WINDOW_HEIGHT * 0.032);
@@ -32,7 +35,7 @@ export default function PhotoModuleScreen({ navigation }) {
   
     useEffect(() => {
       (async () => {
-        const { status } = await Camera.requestPermissionsAsync();
+        const { status } = await Camera.requestPermissionsAsync() && await MediaLibrary.requestPermissionsAsync();
         setHasPermission(status === "granted");
       })();
     }, []);
@@ -42,12 +45,36 @@ export default function PhotoModuleScreen({ navigation }) {
     };
 
     
+const checkAndroidPermission = async () => {
+  try {
+    const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
+    await PermissionsAndroid.request(permission);
+    Promise.resolve();
+  } catch (error) {
+    Promise.reject(error);
+  }
+};
 
     const takePicture = async () => {
+      console.log("before")
       if (cameraRef.current) {
+        console.log("after")
+        // if(!hasAndroidPermission()) continue;
         const options = { quality: 0.5, base64: true, skipProcessing: true };
-        const data = await cameraRef.current.takePictureAsync(options);
+        const data = await cameraRef.current.takePictureAsync(options).then(
+          async (data) => {
+            console.log(data.uri)
+            if (Platform.OS === 'android'){
+              await checkAndroidPermission();
+            }
+            MediaLibrary
+            //var result = CameraRoll.save(data.uri);
+            var result = MediaLibrary.saveToLibraryAsync(data.uri);
+            console.log(result)
+          }
+        );
         const source = data.uri;
+
         if (source) {
           await cameraRef.current.pausePreview();
           setIsPreview(true);
@@ -85,6 +112,25 @@ export default function PhotoModuleScreen({ navigation }) {
         cameraRef.current.stopRecording();
       }
     };
+
+    async function hasAndroidPermission() {
+      const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
+    
+      const hasPermission = await PermissionsAndroid.check(permission);
+      if (hasPermission) {
+        return true;
+      }
+    
+      const status = await PermissionsAndroid.request(permission);
+      return status === 'granted';
+    }
+
+    const pickImage = async () => {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      });
+    }
+
 
     const switchCamera = () => {
       // if (isPreview) {
@@ -179,7 +225,9 @@ export default function PhotoModuleScreen({ navigation }) {
       alignSelf: 'flex-end',
       alignItems: 'center',
       backgroundColor: 'transparent',                  
-    }}>
+    }}
+    onPress={pickImage}
+    >
     <Ionicons
         name="ios-photos"
         style={{ color: "#fff", fontSize: 40}}
@@ -190,7 +238,9 @@ export default function PhotoModuleScreen({ navigation }) {
       alignSelf: 'flex-end',
       alignItems: 'center',
       backgroundColor: 'transparent',
-    }}>
+    }}
+    onPress={takePicture}
+    >
     <FontAwesome
         name="camera"
         style={{ color: "#fff", fontSize: 40}}
