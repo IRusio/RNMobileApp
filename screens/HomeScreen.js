@@ -15,12 +15,10 @@ export default function HomeScreen({ navigation }) {
   }
 
   return (
-    <View>
-    <div>
+    <View style={styles.container}>
     <Button title="Camera" onPress={() => navigation.navigate('PhotoModule')} />
 
     <Button title="Sign Out" onPress={handleSignOut} />
-    </div>
      
     </View>
   );
@@ -28,6 +26,8 @@ export default function HomeScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 2
+    flex: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
   }
 });
