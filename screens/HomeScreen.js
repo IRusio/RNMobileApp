@@ -17,7 +17,7 @@ export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
     <Button title="Camera" onPress={() => navigation.navigate('PhotoModule')} />
-
+    <Button title="File" onPress={() => navigation.navigate('FileModule')} />
     <Button title="Sign Out" onPress={handleSignOut} />
      
     </View>
