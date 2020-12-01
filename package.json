@@ -21,6 +21,7 @@
     "expo-image-picker": "~9.1.0",
     "expo-media-library": "~9.2.1",
     "expo-permissions": "~9.3.0",
+    "expo-sensors": "~9.1.0",
     "firebase": "7.9.0",
     "formik": "2.1.4",
     "react": "16.13.1",

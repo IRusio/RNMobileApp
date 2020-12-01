@@ -1,4 +1,4 @@
-  import React from 'react';
+import React, {setState, state} from 'react';
 import { View, StyleSheet, Button } from 'react-native';
 
 import useStatusBar from '../hooks/useStatusBar';
@@ -18,6 +18,8 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.container}>
     <Button title="Camera" onPress={() => navigation.navigate('PhotoModule')} />
     <Button title="File" onPress={() => navigation.navigate('FileModule')} />
+    <Button title="Web" onPress={() => navigation.navigate('WebModule')} />
+    <Button title="Accelerometer" onPress={() => navigation.navigate('AccelerometerModule')} />
     <Button title="Sign Out" onPress={handleSignOut} />
      
     </View>
@@ -27,7 +29,8 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    alignItems: 'stretch',
+    
   }
 });
